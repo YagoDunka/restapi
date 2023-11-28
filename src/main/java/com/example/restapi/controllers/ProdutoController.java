@@ -3,6 +3,7 @@ package com.example.restapi.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,11 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.restapi.entities.Produto;
+import com.example.restapi.repositories.ProdutoRepository;
  
 @RestController
 public class ProdutoController {
 	
 	List<Produto> produtos = new ArrayList<Produto>();
+	
+	@Autowired
+	ProdutoRepository repo;
 	
 	@GetMapping("/produtos")
 	public ResponseEntity<List<Produto>> getProdutos() {
