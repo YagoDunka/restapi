@@ -1,7 +1,7 @@
 package com.example.restapi.controllers;
  
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,74 +19,49 @@ import com.example.restapi.repositories.ProdutoRepository;
  
 @RestController
 public class ProdutoController {
-	
-	List<Produto> produtos = new ArrayList<Produto>();
-	
 	@Autowired
 	ProdutoRepository repo;
-	
 	@GetMapping("/produtos")
 	public ResponseEntity<List<Produto>> getProdutos() {
-		return ResponseEntity.status(HttpStatus.OK).body(produtos);
+		return ResponseEntity.status(HttpStatus.OK).body(repo.findAll());
 	}
-	
 	@GetMapping("/produtos/{idProduto}")
-	public ResponseEntity<Produto> getProduto(@PathVariable("idProduto") int id) {
-		Produto prod = null;
-		for (Produto pr : produtos) {
-			if(pr.getId() == id) {
-				prod = pr;
-				break;
-			}
-		}
-		if(prod != null)
+	public ResponseEntity<Produto> getProduto(@PathVariable("idProduto") Long id) {
+		Optional<Produto> opt = repo.findById(id);
+		try {
+			Produto prod = opt.get();
 			return ResponseEntity.status(HttpStatus.OK).body(prod);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(prod);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
 	}
-	
 	@DeleteMapping("/produtos/{idProduto}")
-	public ResponseEntity<Boolean> excluirProduto(@PathVariable("idProduto") int id) {
-		Produto prod = null;
-		for (Produto pr : produtos) {
-			if(pr.getId() == id) {
-				prod = pr;
-				break;
-			}
-		}
-		
-		if(prod != null) {
-			produtos.remove(prod);
+	public ResponseEntity<Boolean> excluirProduto(@PathVariable("idProduto") Long id) {
+		Optional<Produto> opt = repo.findById(id);
+		try {
+			Produto prod = opt.get();
+		    repo.delete(prod);
 			return ResponseEntity.status(HttpStatus.OK).body(true);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
 		}
- 
-		
-		return ResponseEntity.status(HttpStatus.OK).body(false);
 	}
-	
 	@PostMapping("/produtos")
 	public ResponseEntity<Produto> salvarProduto(@RequestBody Produto produto) {
-		produto.setId(produtos.size()+1);
-		produtos.add(produto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(produto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(produto));
 	}
-	
 	@PutMapping("/produtos/{idProduto}")
-	public ResponseEntity<Produto> alterarProduto(@PathVariable("idProduto") int id, @RequestBody Produto produto) {
-		Produto prod = null;
-		for (Produto pr : produtos) {
-			if(pr.getId() == id) {
-				prod = pr;
-				break;
-			}
-		}
-		if(prod != null) {
+	public ResponseEntity<Produto> editarProduto(@PathVariable("idProduto") Long id, @RequestBody Produto produto) {
+			Optional<Produto> opt = repo.findById(id);
+		try {
+			Produto prod = opt.get();
 			prod.setDescricao(produto.getDescricao());
-			prod.setValorUnitario(produto.getValorUnitario());
 			prod.setEstoque(produto.getEstoque());
+			prod.setValorUnitario(produto.getValorUnitario());
+			repo.save(prod);
 			return ResponseEntity.status(HttpStatus.OK).body(prod);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
- 
 }
