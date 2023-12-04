@@ -21,10 +21,14 @@ import com.example.restapi.repositories.ProdutoRepository;
 public class ProdutoController {
 	@Autowired
 	ProdutoRepository repo;
+	
+	
 	@GetMapping("/produtos")
 	public ResponseEntity<List<Produto>> getProdutos() {
 		return ResponseEntity.status(HttpStatus.OK).body(repo.findAll());
 	}
+	
+	
 	@GetMapping("/produtos/{idProduto}")
 	public ResponseEntity<Produto> getProduto(@PathVariable("idProduto") Long id) {
 		Optional<Produto> opt = repo.findById(id);
@@ -35,6 +39,8 @@ public class ProdutoController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
+	
+	
 	@DeleteMapping("/produtos/{idProduto}")
 	public ResponseEntity<Boolean> excluirProduto(@PathVariable("idProduto") Long id) {
 		Optional<Produto> opt = repo.findById(id);
@@ -46,10 +52,14 @@ public class ProdutoController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
 		}
 	}
+	
+	
 	@PostMapping("/produtos")
 	public ResponseEntity<Produto> salvarProduto(@RequestBody Produto produto) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(produto));
 	}
+	
+	
 	@PutMapping("/produtos/{idProduto}")
 	public ResponseEntity<Produto> editarProduto(@PathVariable("idProduto") Long id, @RequestBody Produto produto) {
 			Optional<Produto> opt = repo.findById(id);

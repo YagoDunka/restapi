@@ -1,5 +1,6 @@
 package com.example.restapi.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,8 +12,13 @@ public class Categoria {
 	@Id
 	@GeneratedValue( strategy = GenerationType.AUTO)
 	private int id;
-	private String nome;
+	@Column( length = 20)
+	private String descricao;
 	private Boolean status;
+	
+	//Notação em categoria
+	//@OneToMany
+	//private List<Produto> produtos = new ArrayList<>();
 	
 	public int getId() {
 		return id;
@@ -20,11 +26,11 @@ public class Categoria {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getNome() {
-		return nome;
+	public String getDescricao() {
+		return descricao;
 	}
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setNome(String descricao) {
+		this.descricao = descricao;
 	}
 	public Boolean getStatus() {
 		return status;

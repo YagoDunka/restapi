@@ -1,8 +1,9 @@
 package com.example.restapi.controllers;
  
-import java.util.ArrayList;
 import java.util.List;
- 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,95 +14,74 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
- 
+
 import com.example.restapi.entities.Categoria;
+import com.example.restapi.entities.Produto;
+import com.example.restapi.repositories.CategoriaRepository;
  
 @RestController
 public class CategoriaController {
-List<Categoria> categorias = new ArrayList<Categoria>();
+	
+	@Autowired
+	CategoriaRepository repo;
 	
 	@GetMapping("/categoria")
 	public ResponseEntity<List<Categoria>> buscarCategoria() {
-		return ResponseEntity.status(HttpStatus.OK).body(categorias);
+		return ResponseEntity.status(HttpStatus.OK).body(repo.findAll());
 	}
 	
 	@GetMapping("/categoria/{idCategoria}")
-	public ResponseEntity<Categoria> buscarCategorias(@PathVariable("idCategoria") int id) {
-		Categoria cat = null;
-		for (Categoria pr : categorias) {
-			if(pr.getId() == id) {
-				cat = pr;
-				break;
-			}
-		}
-		if(cat != null)
+	public ResponseEntity<Categoria> buscarCategorias(@PathVariable("idCategoria") long id) {
+		Optional<Categoria> opt = repo.findById(id);
+		try {
+			Categoria cat = opt.get();
 			return ResponseEntity.status(HttpStatus.OK).body(cat);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(cat);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}	
 	}
 	
 	@DeleteMapping("/categoria/{idCategoria}")
-	public ResponseEntity<Boolean> ExcluirCategoria(@PathVariable("idCategoria") int id) {
-		Categoria prod = null;
-		for (Categoria pr : categorias) {
-			if(pr.getId() == id) {
-				prod = pr;
-				break;
-			}
-		}
-		
-		if(prod != null) {
-			categorias.remove(prod);
+	public ResponseEntity<Boolean> ExcluirCategoria(@PathVariable("idCategoria") long id) {
+		Optional<Categoria> opt = repo.findById(id);
+		try {
+			Categoria cat = opt.get();
+			repo.delete(cat);
 			return ResponseEntity.status(HttpStatus.OK).body(true);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);	
 		}
- 
-		
-		return ResponseEntity.status(HttpStatus.OK).body(false);
 	}
 	
 	@PostMapping("/categoria")
 	public ResponseEntity<Categoria> salverCategoria(@RequestBody Categoria categoria) {
-		categoria.setId(categorias.size()+1);
-		categorias.add(categoria);
-		return ResponseEntity.status(HttpStatus.CREATED).body(categoria);
+		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save());
 	}
 	
 	@PutMapping("/categoria/{idCategoria}")
-	public ResponseEntity<Categoria> editarCategoria(@PathVariable("idCategoria") int id, @RequestBody Categoria categori) {
-		
-		Categoria categoria = null;
-		for (Categoria cat : categorias) {
-			if(cat.getId() == id) {
-				categoria = cat;
-				break;
-			}
-		}
-		
-		if(categoria != null) {
-			categoria.setNome(categori.getNome());
+	public ResponseEntity<Categoria> editarCategoria(@PathVariable("idCategoria") long id, @RequestBody Categoria categori) {
+		Optional<Categoria> opt = repo.findById(id);
+		try {
+			Categoria categoria = opt.get();
+			categoria.setNome(categori.getDescricao());
 			categoria.setStatus(categori.getStatus());
 			return ResponseEntity.status(HttpStatus.OK).body(categoria);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);	
 		}
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(categoria);
 	}
 	
 	@PatchMapping("/categoria/{idCategoria}")
-	public ResponseEntity<Categoria> desativarCategoria(@PathVariable("idCategoria") int id, @RequestBody Categoria categori) {
-		
-		Categoria categoria = null;
-		for (Categoria cat : categorias) {
-			if(cat.getId() == id) {
-				categoria = cat;
-				break;
-			}
-		}
-		
-		if(categoria != null) {
+	public ResponseEntity<Categoria> desativarCategoria(@PathVariable("idCategoria") long id, @RequestBody Categoria categori) {
+		Optional<Categoria> opt = repo.findById(id);
+		try {
+			Categoria categoria = opt.get();
 			categoria.setStatus(categori.getStatus());
 			return ResponseEntity.status(HttpStatus.OK).body(categoria);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(null);
 		}
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(categoria);
+		
 	}
 }

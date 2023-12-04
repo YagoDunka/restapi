@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
  
 @Entity
 public class Produto {
@@ -16,6 +17,9 @@ public class Produto {
 	@Column(name = "preco")
 	private double valorUnitario;
 	private double estoque;
+	
+	@ManyToOne	
+	private Categoria categoria;
 	
 	public Long getId() {
 		return id;
@@ -47,5 +51,13 @@ public class Produto {
 	
 	public void setEstoque(double stoque) {
 		this.estoque = stoque;
+	}
+
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
 	}
 }
