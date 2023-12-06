@@ -16,10 +16,6 @@ public class Categoria {
 	private String descricao;
 	private Boolean status;
 	
-	//Notação em categoria
-	//@OneToMany
-	//private List<Produto> produtos = new ArrayList<>();
-	
 	public int getId() {
 		return id;
 	}

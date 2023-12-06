@@ -55,7 +55,7 @@ public class CategoriaController {
 	
 	@PostMapping("/categoria")
 	public ResponseEntity<Categoria> salverCategoria(@RequestBody Categoria categoria) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save());
+		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(categoria));
 	}
 	
 	@PutMapping("/categoria/{idCategoria}")
